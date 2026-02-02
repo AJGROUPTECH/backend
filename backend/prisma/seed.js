@@ -209,7 +209,7 @@ async function main() {
             data: {
                 productId: product.id,
                 warehouseId: warehouse.id,
-                quantity: Math.floor(Math.random() * 50) + 10
+                quantity: 500
             }
         });
     }
