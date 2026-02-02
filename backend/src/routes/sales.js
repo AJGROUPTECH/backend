@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate } from '../middleware/auth.js';
+import { sendSaleNotification, sendLowStockAlert } from '../services/telegram.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -263,6 +264,29 @@ router.post('/', authenticate, async (req, res) => {
             message: 'Sotuv muvaffaqiyatli amalga oshirildi',
             sale: fullSale
         });
+
+        // Telegram xabar yuborish (async, javobni kutmaymiz)
+        try {
+            sendSaleNotification(fullSale);
+
+            // Kam zaxira tekshirish va ogohlantirish
+            for (const saleItem of saleItems) {
+                const newQty = saleItem.stock.quantity - saleItem.quantity;
+                if (newQty <= 5) {
+                    const product = await prisma.product.findUnique({
+                        where: { id: saleItem.productId }
+                    });
+                    const warehouse = await prisma.warehouse.findUnique({
+                        where: { id: saleItem.warehouseId }
+                    });
+                    if (product && warehouse) {
+                        sendLowStockAlert(product, newQty, warehouse.name);
+                    }
+                }
+            }
+        } catch (telegramError) {
+            console.log('Telegram xabar yuborishda xato:', telegramError.message);
+        }
     } catch (error) {
         console.error('Sale error:', error);
         res.status(500).json({ error: 'Server xatosi', message: error.message });

@@ -22,6 +22,9 @@ import salesRoutes from './routes/sales.js';
 import reportsRoutes from './routes/reports.js';
 import analyticsRoutes from './routes/analytics.js';
 
+// Import Telegram bot
+import { initTelegramBot } from './services/telegram.js';
+
 dotenv.config();
 
 const app = express();
@@ -80,6 +83,9 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server ${PORT} portda ishga tushdi`);
   console.log(`📚 Bookshop ERP API: http://localhost:${PORT}/api`);
+
+  // Telegram bot ishga tushirish
+  initTelegramBot();
 });
 
 // Graceful shutdown
