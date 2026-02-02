@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -12,7 +13,9 @@ import {
     Settings,
     LogOut,
     BookOpen,
-    User
+    User,
+    Menu,
+    X
 } from 'lucide-react';
 
 const navItems = [
@@ -50,11 +53,49 @@ const navItems = [
 export default function Layout() {
     const { user, logout } = useAuth();
     const location = useLocation();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    // Close sidebar when route changes (mobile)
+    useEffect(() => {
+        setSidebarOpen(false);
+    }, [location.pathname]);
+
+    // Close sidebar when clicking outside
+    const handleOverlayClick = () => {
+        setSidebarOpen(false);
+    };
+
+    // Prevent body scroll when sidebar is open on mobile
+    useEffect(() => {
+        if (sidebarOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [sidebarOpen]);
 
     return (
         <div className="app-container">
+            {/* Mobile Menu Button */}
+            <button
+                className="mobile-menu-btn"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                aria-label="Menyu"
+            >
+                {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
+            {/* Overlay for mobile */}
+            <div
+                className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+                onClick={handleOverlayClick}
+            />
+
             {/* Sidebar */}
-            <aside className="sidebar">
+            <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
                 <div className="sidebar-header">
                     <div className="sidebar-logo">
                         <div className="sidebar-logo-icon">
@@ -76,6 +117,7 @@ export default function Layout() {
                                         `nav-link ${isActive || (item.path === '/' && location.pathname === '/') ? 'active' : ''}`
                                     }
                                     end={item.path === '/'}
+                                    onClick={() => setSidebarOpen(false)}
                                 >
                                     <item.icon size={20} />
                                     <span>{item.label}</span>
