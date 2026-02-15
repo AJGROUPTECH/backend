@@ -85,12 +85,12 @@ async function main() {
 
     // 6. ADMIN FOYDALANUVCHI
     console.log('👤 Admin foydalanuvchi yaratilmoqda...');
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const hashedPassword = await bcrypt.hash('Akkkkk&deve$/', 10);
     await prisma.user.upsert({
-        where: { username: 'admin' },
+        where: { username: 'ajdeveloper' },
         update: {},
         create: {
-            username: 'admin',
+            username: 'ajdeveloper',
             password: hashedPassword,
             fullName: 'Administrator',
             phone: '+998 90 000 00 00',

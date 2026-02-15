@@ -5,11 +5,12 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node prisma/update-admin.js && node src/index.js",
     "dev": "node --watch src/index.js",
     "db:push": "npx prisma db push",
     "db:seed": "node prisma/seed.js",
-    "db:studio": "npx prisma studio"
+    "db:studio": "npx prisma studio",
+    "update-admin": "node prisma/update-admin.js"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0",
